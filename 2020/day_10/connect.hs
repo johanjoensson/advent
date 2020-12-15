@@ -1,6 +1,6 @@
 import System.IO
 import Data.List (sort, nub)
-import Data.Map (Map, insert, empty, (!), member)
+import Data.Map (Map, insert, empty, (!), member, keys)
 import Control.Monad.Fix
 
 get_adapters :: [String] -> [Int]
@@ -31,10 +31,12 @@ ways_to connections joltage
 			  where connectors = connections ! joltage
 				next_joltage = head connectors
 
-memo_ways_to f (connections, joltage)
-				| connectors == [] = 1
-			  	| otherwise = sum . map (\i -> f (connections, i)) $ connectors
-			  	where connectors = connections ! joltage
+memo_ways_to :: Map Int [Int] -> Int -> Int
+memo_ways_to connections joltage = (map f [0..]) !! joltage
+				where 	f joltage
+			  			| connectors == [] = 1
+			  			| otherwise = sum . map (memo_ways_to connections) $ connectors
+				      		where connectors  = [i | i <- [joltage -3 .. joltage - 1], i `member` connections]
 
 
 count_blocks :: Int -> [Int] -> [Int]
@@ -53,4 +55,4 @@ main = do
 	let adapters = sort . get_adapters . lines $ content
 	let max_val = 3 + maximum adapters
 	let connections = connect_to empty (0:adapters++[max_val])
-	print $ fix memo_ways_to (connections, max_val)
+	print $ memo_ways_to connections max_val
