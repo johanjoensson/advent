@@ -1,0 +1,4 @@
+*.hi
+*.o
+Data/*
+seats_of_life
