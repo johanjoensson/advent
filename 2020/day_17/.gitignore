@@ -1,0 +1,5 @@
+*.hi
+*.o
+Data/*
+split*
+game_of_cubes
